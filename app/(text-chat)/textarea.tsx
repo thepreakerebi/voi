@@ -40,15 +40,20 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
           body: JSON.stringify({ messages }),
         });
         if (!res.ok || !res.body) return;
+        // Stream plain text chunks; show skeleton until first chunk arrives.
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let full = "";
+        let sawFirst = false;
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           full += chunk;
           onAssistantDelta?.(chunk);
+          if (!sawFirst) {
+            sawFirst = true;
+          }
         }
         onAssistantDone?.(full);
       } catch {

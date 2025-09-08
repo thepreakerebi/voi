@@ -7,6 +7,7 @@ import ChatTextarea, { ChatTextareaHandle } from "./textarea";
 import { Button } from "@/components/ui/button";
 import { Layers } from "lucide-react";
 import Message from "./message";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TextMode() {
   const composerRef = React.useRef<ChatTextareaHandle>(null);
@@ -15,6 +16,16 @@ export default function TextMode() {
   }
 
   const [messages, setMessages] = React.useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
+  const [isAssistantLoading, setIsAssistantLoading] = React.useState(false);
+  const endRef = React.useRef<HTMLDivElement | null>(null);
+
+  function scrollToBottom(smooth = true) {
+    endRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+  }
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages.length, isAssistantLoading]);
 
   return (
     <section aria-labelledby="text-mode-heading" className="mx-auto w-full max-w-3xl px-4 py-8 md:py-12">
@@ -55,11 +66,29 @@ export default function TextMode() {
         {messages.map((m, i) => (
           <Message key={i} role={m.role} content={m.content} />
         ))}
+        {isAssistantLoading && messages[messages.length - 1]?.role !== "assistant" && (
+          <article aria-hidden className="w-full">
+            <section className="flex justify-start">
+              <section className="bg-secondary/50 dark:bg-secondary/20 rounded-2xl px-4 py-3 max-w-[80%]">
+                <section className="space-y-2">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-4 w-64" />
+                  <Skeleton className="h-4 w-52" />
+                </section>
+              </section>
+            </section>
+          </article>
+        )}
+        <section ref={endRef} />  
       </section>
 
       <ChatTextarea
         ref={composerRef}
-        onSend={(text) => setMessages((prev) => [...prev, { role: "user", content: text }])}
+        onSend={(text) => {
+          setMessages((prev) => [...prev, { role: "user", content: text }]);
+          setIsAssistantLoading(true);
+          scrollToBottom(false);
+        }}
         onAssistantDelta={(delta) =>
           setMessages((prev) => {
             const last = prev[prev.length - 1];
@@ -75,6 +104,7 @@ export default function TextMode() {
             if (!last || last.role !== "assistant") return [...prev, { role: "assistant", content: full }];
             const updated = [...prev];
             updated[updated.length - 1] = { role: "assistant", content: full };
+            setIsAssistantLoading(false);
             return updated;
           })
         }
