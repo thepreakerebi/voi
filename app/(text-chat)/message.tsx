@@ -13,8 +13,8 @@ export default function Message({ role, content }: Props) {
         <div
           className={
             (isUser
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary/70 dark:bg-secondary/20 text-foreground") +
+              ? "bg-neutral-200 dark:bg-neutral-900 text-foreground"
+              : "text-foreground") +
             " max-w-[80%] rounded-2xl px-4 py-3 whitespace-pre-wrap leading-relaxed"
           }
         >

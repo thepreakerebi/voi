@@ -25,8 +25,7 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
       insertText: (text: string) => setValue((v) => (v ? v + "\n\n" + text : text)),
     }));
 
-    async function handleSubmit(e: React.FormEvent) {
-      e.preventDefault();
+    async function submitCurrent() {
       const trimmed = value.trim();
       if (!trimmed) return;
       onSend?.(trimmed);
@@ -57,6 +56,11 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
       }
     }
 
+    async function handleSubmit(e: React.FormEvent) {
+      e.preventDefault();
+      await submitCurrent();
+    }
+
     return (
       <footer className="fixed inset-x-0 bottom-0 z-40 md:py-2">
         <form
@@ -74,6 +78,12 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
               placeholder={label}
               value={value}
               onChange={(e) => setValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void submitCurrent();
+                }
+              }}
               className={cn(
                 "w-full resize-none rounded-2xl border bg-background p-4 text-base outline-none border-none focus-visible:border-none",
               )}
