@@ -1,9 +1,13 @@
 import Header from "./_components/header";
+import TextMode from "./(text-chat)/text-mode";
+
 export default function Home() {
   return (
     <section>
       <Header />
-      <h1>Hello World</h1>
+      <section className="w-full h-screen px-3 md:px-64 py-16">
+        <TextMode />
+      </section>
     </section>
   );
 }
