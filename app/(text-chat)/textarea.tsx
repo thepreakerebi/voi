@@ -119,16 +119,16 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
                 <Mic className="size-5" />
                 <span>Dictate</span>
               </Button>
-              <Button type="submit" className="rounded-full gap-2 px-6">
-                <ArrowUp className="size-5" />
-                <span>Send</span>
+              <Button type="button" variant="secondary" className="rounded-full gap-2 px-5" aria-label="Voice mode">
+                <AudioLines className="size-5" />
+                <span>Voice</span>
               </Button>
             </section>
           </section>
           <section className="pt-1 md:hidden">
-            <Button type="button" variant="secondary" className="w-full rounded-full justify-center gap-2" aria-label="Use voice mode">
-              <AudioLines className="size-5" />
-              <span>Use voice mode</span>
+            <Button type="submit" className="w-full rounded-full justify-center gap-2 h-12 text-base" aria-label="Send message">
+              <ArrowUp className="size-5" />
+              <span>Send</span>
             </Button>
           </section>
         </form>
