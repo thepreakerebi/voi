@@ -6,6 +6,7 @@ import TextModeCard from "./text-mode-card";
 import ChatTextarea, { ChatTextareaHandle } from "./textarea";
 import { Button } from "@/components/ui/button";
 import { Layers } from "lucide-react";
+import Message from "./message";
 
 export default function TextMode() {
   const composerRef = React.useRef<ChatTextareaHandle>(null);
@@ -13,26 +14,72 @@ export default function TextMode() {
     composerRef.current?.insertText(text);
   }
 
+  const [messages, setMessages] = React.useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
+
   return (
     <section aria-labelledby="text-mode-heading" className="mx-auto w-full max-w-3xl px-4 py-8 md:py-12">
-      <TextModeTop />
+      {messages.length === 0 && (
+        <>
+          <TextModeTop />
 
-      <section className="mt-6 w-full mx-auto space-y-4">
-        <TextModeCard src="/animated-luggage-unscreen.gif" alt="Travel">
-          Plan a 3-day Lagos itinerary on a moderate budget
-        </TextModeCard>
-        <TextModeCard src="/mail-unscreen.gif" alt="Email">
-          Write a polite 70-words email to my manager requesting remote work, state the reason.
-        </TextModeCard>
-        <section className="flex justify-center">
-          <Button type="button" variant="outline" className="rounded-full px-5">
-            <Layers className="size-4" />
-            See more example prompts
-          </Button>
-        </section>
+          <section className="mt-6 w-full space-y-4">
+            <TextModeCard
+              src="/animated-luggage-unscreen.gif"
+              alt="Travel"
+              onClick={() => handlePromptInsert("Plan a 3-day Lagos itinerary on a moderate budget")}
+            >
+              Plan a 3-day Lagos itinerary on a moderate budget
+            </TextModeCard>
+            <TextModeCard
+              src="/mail-unscreen.gif"
+              alt="Email"
+              onClick={() =>
+                handlePromptInsert(
+                  "Write a polite 70-words email to my manager requesting remote work, state the reason."
+                )
+              }
+            >
+              Write a polite 70-words email to my manager requesting remote work, state the reason.
+            </TextModeCard>
+            <section className="flex justify-center">
+              <Button type="button" variant="outline" className="rounded-full px-5">
+                <Layers className="size-4" />
+                See more example prompts
+              </Button>
+            </section>
+          </section>
+        </>
+      )}
+
+      <section aria-live="polite" className="mt-6 mb-36 space-y-4">
+        {messages.map((m, i) => (
+          <Message key={i} role={m.role} content={m.content} />
+        ))}
       </section>
 
-      <ChatTextarea ref={composerRef} onSend={() => {}} />
+      <ChatTextarea
+        ref={composerRef}
+        onSend={(text) => setMessages((prev) => [...prev, { role: "user", content: text }])}
+        onAssistantDelta={(delta) =>
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (!last || last.role !== "assistant") return [...prev, { role: "assistant", content: delta }];
+            const updated = [...prev];
+            updated[updated.length - 1] = { role: "assistant", content: last.content + delta };
+            return updated;
+          })
+        }
+        onAssistantDone={(full) =>
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (!last || last.role !== "assistant") return [...prev, { role: "assistant", content: full }];
+            const updated = [...prev];
+            updated[updated.length - 1] = { role: "assistant", content: full };
+            return updated;
+          })
+        }
+        getSessionMessages={() => messages}
+      />
     </section>
   );
 }

@@ -12,6 +12,9 @@ export const runtime = "edge";
 // 1) audio/* body → STT → chat → TTS (binary response)
 // 2) JSON { text: string, voice?: string } → TTS only (binary response)
 export async function POST(req: NextRequest) {
+  if (!env.OPENAI_API_KEY) {
+    return NextResponse.json({ error: "Server not configured: OPENAI_API_KEY missing" }, { status: 500 });
+  }
   const openai = createOpenAI({ apiKey: env.OPENAI_API_KEY });
 
   const contentType = req.headers.get("content-type") || "";

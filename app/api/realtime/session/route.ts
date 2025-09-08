@@ -9,6 +9,9 @@ export const runtime = "edge";
 // Client can use it to establish a WebRTC/WebSocket session directly with OpenAI.
 export async function POST(req: NextRequest) {
   try {
+    if (!env.OPENAI_API_KEY) {
+      return NextResponse.json({ error: "Server not configured: OPENAI_API_KEY missing" }, { status: 500 });
+    }
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
     const rl = rateLimit({ key: `rt:${ip}`, limit: 10, windowMs: 60_000 });
     if (!rl.ok) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });

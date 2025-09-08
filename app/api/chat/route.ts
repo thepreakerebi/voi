@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
 
   const { sessionId, messages } = parse.data;
 
+  if (!env.OPENAI_API_KEY) {
+    return NextResponse.json({ error: "Server not configured: OPENAI_API_KEY missing" }, { status: 500 });
+  }
+
   const openai = createOpenAI({ apiKey: env.OPENAI_API_KEY });
   const model = openai("gpt-4o-mini");
 

@@ -1,19 +1,15 @@
 import { z } from "zod";
 
+// Non-fatal env schema: allow missing in dev, routes will guard at request time.
 const EnvSchema = z.object({
-  OPENAI_API_KEY: z.string().min(1, "Missing OPENAI_API_KEY"),
+  OPENAI_API_KEY: z.string().min(1).optional(),
 });
 
 export const env = (() => {
   const parsed = EnvSchema.safeParse({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   });
-  if (!parsed.success) {
-    // Throw a readable error early during cold start/build
-    const message = parsed.error.issues.map((i) => i.message).join(", ");
-    throw new Error(`Env validation error: ${message}`);
-  }
-  return parsed.data;
+  return parsed.success ? parsed.data : {};
 })();
 
 

@@ -12,22 +12,49 @@ export type ChatTextareaHandle = {
 type Props = {
   label?: string;
   onSend?: (text: string) => void;
+  onAssistantDelta?: (delta: string) => void;
+  onAssistantDone?: (full: string) => void;
+  getSessionMessages?: () => Array<{ role: "system" | "user" | "assistant"; content: string }>;
 };
 
 const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
-  ({ label = "Ask anything", onSend }, ref) => {
+  ({ label = "Ask anything", onSend, onAssistantDelta, onAssistantDone, getSessionMessages }, ref) => {
     const [value, setValue] = React.useState("");
 
     React.useImperativeHandle(ref, () => ({
       insertText: (text: string) => setValue((v) => (v ? v + "\n\n" + text : text)),
     }));
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
       const trimmed = value.trim();
       if (!trimmed) return;
       onSend?.(trimmed);
+
+      const messages = (getSessionMessages?.() ?? []).concat([{ role: "user" as const, content: trimmed }]);
       setValue("");
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages }),
+        });
+        if (!res.ok || !res.body) return;
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let full = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          full += chunk;
+          onAssistantDelta?.(chunk);
+        }
+        onAssistantDone?.(full);
+      } catch {
+        // swallow error for now; could add toast
+      }
     }
 
     return (
