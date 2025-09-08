@@ -3,22 +3,21 @@
 import * as React from "react";
 import TextModeTop from "./text-mode-top";
 import TextModeCard from "./text-mode-card";
-import ChatTextarea from "./textarea";
+import ChatTextarea, { ChatTextareaHandle } from "./textarea";
 import { Button } from "@/components/ui/button";
 import { Layers } from "lucide-react";
 
 export default function TextMode() {
-  const [value, setValue] = React.useState("");
-
+  const composerRef = React.useRef<ChatTextareaHandle>(null);
   function handlePromptInsert(text: string) {
-    setValue((v) => (v ? v + "\n\n" + text : text));
+    composerRef.current?.insertText(text);
   }
 
   return (
     <section aria-labelledby="text-mode-heading" className="mx-auto w-full max-w-3xl px-4 py-8 md:py-12">
       <TextModeTop />
 
-      <section className="mt-6 space-y-4">
+      <section className="mt-6 w-full mx-auto space-y-4">
         <TextModeCard src="/animated-luggage-unscreen.gif" alt="Travel">
           Plan a 3-day Lagos itinerary on a moderate budget
         </TextModeCard>
@@ -33,27 +32,7 @@ export default function TextMode() {
         </section>
       </section>
 
-      <form className="mt-10 grid gap-3" aria-label="Text chat form" onSubmit={(e) => e.preventDefault()}>
-        <ChatTextarea value={value} onChange={(e) => setValue(e.target.value)} />
-        <section className="flex items-center justify-between gap-3">
-          <section className="flex items-center gap-3">
-            <Button type="button" variant="ghost" onClick={() => handlePromptInsert("+")}
-              aria-label="Add attachment">
-              +
-            </Button>
-            <Button type="button" variant="ghost" onClick={() => handlePromptInsert("[Dictate]")}
-              aria-label="Start dictation">
-              Dictate
-            </Button>
-          </section>
-          <Button type="submit" className="rounded-full px-6">Send</Button>
-        </section>
-        <section className="pt-1">
-          <Button type="button" variant="outline" className="w-full rounded-full justify-center" aria-label="Use voice mode">
-            Use voice mode
-          </Button>
-        </section>
-      </form>
+      <ChatTextarea ref={composerRef} onSend={() => {}} />
     </section>
   );
 }

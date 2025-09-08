@@ -6,7 +6,7 @@ import { MenuIcon } from "lucide-react";
 
 export default function Header() {
   return (
-    <header className="fixed inset-x-0 top-0 z-40 bg-background">
+    <header className="fixed inset-x-0 top-0 z-40 bg-secondary dark:bg-secondary/20">
       <nav aria-label="Primary" className="w-full">
         <ul className="flex h-14 items-center justify-between px-4">
           <li>
