@@ -1,22 +1,42 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
+import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "edge";
 
 // Generates an ephemeral OpenAI Realtime token.
 // Client can use it to establish a WebRTC/WebSocket session directly with OpenAI.
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+    const rl = rateLimit({ key: `rt:${ip}`, limit: 10, windowMs: 60_000 });
+    if (!rl.ok) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+
+    const Body = z
+      .object({
+        model: z.string().default("gpt-4o-realtime-preview-2024-12-17"),
+        voice: z.string().default("alloy"),
+        input_audio_format: z.enum(["pcm16", "wav", "webm-opus"]).default("webm-opus"),
+        sample_rate_hz: z.number().int().positive().default(24000),
+        turn_detection: z
+          .object({ type: z.literal("server_vad"), silence_duration_ms: z.number().int().positive().default(500) })
+          .optional(),
+      });
+
+    const raw = await req.json().catch(() => ({}));
+    const parsed = Body.safeParse(raw);
+    if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+
+    const { model, voice, input_audio_format, sample_rate_hz, turn_detection } = parsed.data;
+
     const res = await fetch("https://api.openai.com/v1/realtime/sessions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: "gpt-4o-realtime-preview-2024-12-17",
-        voice: "alloy",
-      }),
+      body: JSON.stringify({ model, voice, input_audio_format, sample_rate_hz, turn_detection }),
     });
 
     if (!res.ok) {
@@ -25,7 +45,7 @@ export async function POST() {
     }
     const json = await res.json();
     return NextResponse.json(json);
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }
