@@ -3,7 +3,7 @@ import * as React from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Laptop } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { buttonVariants } from "@/components/ui/button";
 
 export function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
@@ -21,7 +21,7 @@ export function ThemeSwitcher() {
         else if (theme === "dark") setTheme("system");
         else setTheme("light");
       }}
-      className={cn(SidebarMenuButton({ variant: "default", size: "default" }), "w-full flex items-center gap-2 justify-start")}
+      className={cn(buttonVariants({ variant: "ghost", size: "default" }), "w-full flex items-center gap-2 justify-start")}
     >
       {icon}
       <span>Change theme</span>
