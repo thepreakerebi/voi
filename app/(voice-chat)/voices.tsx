@@ -7,7 +7,7 @@ import AiOrb from "./ai-orb";
 
 type Props = {
   onClose?: () => void;
-  onToggleMic?: () => void;
+  onToggleMic?: () => Promise<void> | void;
   micOn?: boolean;
 };
 
@@ -23,11 +23,11 @@ export default function Voices({ onClose, onToggleMic, micOn }: Props) {
       <p className="text-sm text-muted-foreground">Your mic is {micOn ? "on" : "off"} {micOn && (<span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-emerald-600 text-xs">You can speak now</span>)}</p>
 
       <section className="flex flex-row items-center justify-center gap-3 w-full">
-        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 flex-1 md:flex-none" onClick={onToggleMic}>
+        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 flex-1 md:flex-none" onClick={() => { void onToggleMic?.(); }}>
           {micOn ? <Mic className="size-4" /> : <MicOff className="size-4" />}
           {micOn ? "Turn off mic" : "Turn on mic"}
         </Button>
-        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 flex-1 md:flex-none" onClick={onClose}>
+        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 flex-1 md:flex-none" onClick={async () => { if (micOn) await onToggleMic?.(); onClose?.(); }}>
           <X className="size-4" />
           Close voice mode
         </Button>

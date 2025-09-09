@@ -106,7 +106,7 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
                 <Mic className="size-5" />
                 <span>Dictate</span>
               </Button>
-              <Button type="button" variant="secondary" className="rounded-full gap-2 px-6" aria-label="Use voice mode" onClick={onOpenVoice}
+              <Button type="button" variant="secondary" className="rounded-full gap-2 px-6" aria-label="Use voice mode" onClick={() => { onOpenVoice?.(); }}
               >
                 <AudioLines className="size-5" />
                 <span>Use voice mode</span>
@@ -121,7 +121,7 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
                 <Mic className="size-5" />
                 <span>Dictate</span>
               </Button>
-              <Button type="button" variant="secondary" className="rounded-full gap-2 px-5" aria-label="Voice mode" onClick={onOpenVoice}
+              <Button type="button" variant="secondary" className="rounded-full gap-2 px-5" aria-label="Voice mode" onClick={() => { onOpenVoice?.(); }}
               >
                 <AudioLines className="size-5" />
                 <span>Voice</span>

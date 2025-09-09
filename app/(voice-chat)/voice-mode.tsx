@@ -5,8 +5,14 @@ import Captions from "./captions";
 import Voices from "./voices";
 import { useVoiceChat } from "./use-voice-chat";
 
-export default function VoiceMode({ onClose }: { onClose?: () => void }) {
+export default function VoiceMode({ onClose, onMicControlReady }: { onClose?: () => void; onMicControlReady?: (ref: { toggleMic?: () => Promise<void> }) => void }) {
   const { isMicOn, messages, toggleMic } = useVoiceChat();
+  
+  React.useEffect(() => {
+    onMicControlReady?.({ toggleMic });
+  }, [onMicControlReady]);
+
+  // If parent requested auto-mic immediately after mount, it will call ref after this effect
 
   return (
     <section className="w-full h-full md:px-2 md:py-8">
