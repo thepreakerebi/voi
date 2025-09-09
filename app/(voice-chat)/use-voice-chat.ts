@@ -2,11 +2,12 @@
 
 import * as React from "react";
 
+type VoiceMessage = { role: "user" | "assistant"; content: string };
+
 type UseVoiceChatReturn = {
   isMicOn: boolean;
   isAiSpeaking: boolean;
-  userCaption: string;
-  aiCaption: string;
+  messages: VoiceMessage[];
   toggleMic: () => Promise<void>;
 };
 
@@ -19,8 +20,7 @@ export function useVoiceChat(): UseVoiceChatReturn {
 
   const [isMicOn, setIsMicOn] = React.useState(false);
   const [isAiSpeaking, setIsAiSpeaking] = React.useState(false);
-  const [userCaption, setUserCaption] = React.useState("");
-  const [aiCaption, setAiCaption] = React.useState("");
+  const [messages, setMessages] = React.useState<VoiceMessage[]>([]);
 
   React.useEffect(() => {
     audioRef.current = new Audio();
@@ -64,8 +64,14 @@ export function useVoiceChat(): UseVoiceChatReturn {
         });
         if (!res.ok) { processingRef.current = false; return; }
         const json = await res.json();
-        if (typeof json.userText === "string") setUserCaption(json.userText);
-        if (typeof json.assistantText === "string") setAiCaption(json.assistantText);
+        const u: string | undefined = json.userText;
+        const a: string | undefined = json.assistantText;
+        if (u && typeof u === "string" && u.trim().length > 0) {
+          setMessages((prev) => [...prev, { role: "user", content: u.trim() }]);
+        }
+        if (a && typeof a === "string" && a.trim().length > 0) {
+          setMessages((prev) => [...prev, { role: "assistant", content: a.trim() }]);
+        }
         if (json.audio?.base64 && json.audio?.mediaType && audioRef.current) {
           const blob = base64ToBlob(json.audio.base64, json.audio.mediaType);
           const url = URL.createObjectURL(blob);
@@ -95,7 +101,7 @@ export function useVoiceChat(): UseVoiceChatReturn {
     else await startMic();
   }
 
-  return { isMicOn, isAiSpeaking, userCaption, aiCaption, toggleMic };
+  return { isMicOn, isAiSpeaking, messages, toggleMic };
 }
 
 

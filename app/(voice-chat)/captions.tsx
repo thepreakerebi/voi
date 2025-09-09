@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Message from "../(text-chat)/message";
 
 type Props = {
-  userText?: string;
-  aiText?: string;
+  messages?: Array<{ role: "user" | "assistant"; content: string }>;
 };
 
-export default function Captions({ userText, aiText }: Props) {
+export default function Captions({ messages = [] }: Props) {
   return (
     <section className="h-full w-full flex items-center justify-center">
       <section
@@ -15,7 +15,7 @@ export default function Captions({ userText, aiText }: Props) {
         aria-atomic="false"
         className="text-center space-y-6 w-full h-[42vh] md:h-full max-w-2xl"
       >
-        {!userText && !aiText ? (
+        {messages.length === 0 ? (
           <section className="h-full w-full flex items-center justify-center">
             <figure className="flex flex-col items-center gap-3">
               <Image src="/caption-unscreen.gif" alt="" width={48} height={48} />
@@ -25,19 +25,10 @@ export default function Captions({ userText, aiText }: Props) {
             </figure>
           </section>
         ) : (
-          <section className="h-full w-full overflow-y-auto space-y-6 px-2">
-            {userText && (
-              <article>
-                <h3 className="text-base md:text-xl font-medium">You</h3>
-                <p className="text-lg md:text-2xl leading-relaxed text-pretty">{userText}</p>
-              </article>
-            )}
-            {aiText && (
-              <article>
-                <h3 className="text-base md:text-xl font-medium">Assistant</h3>
-                <p className="text-lg md:text-2xl leading-relaxed text-pretty">{aiText}</p>
-              </article>
-            )}
+          <section className="h-full w-full overflow-y-auto space-y-4 text-left px-2">
+            {messages.map((m, i) => (
+              <Message key={i} role={m.role} content={m.content} />
+            ))}
           </section>
         )}
       </section>
