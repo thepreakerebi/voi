@@ -1,9 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { experimental_generateSpeech as generateSpeech, streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-import { env } from "@/lib/env";
-import { z } from "zod";
-import { appendMessage, getMessages } from "@/lib/session-store";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -13,6 +8,14 @@ export const revalidate = 0;
 // 1) audio/* body → STT → chat → TTS (binary response)
 // 2) JSON { text: string, voice?: string } → TTS only (binary response)
 export async function POST(req: NextRequest) {
+  const [{ experimental_generateSpeech: generateSpeech, streamText }, { createOpenAI }, { env }, { z }, { appendMessage, getMessages }] = await Promise.all([
+    import("ai"),
+    import("@ai-sdk/openai"),
+    import("@/lib/env"),
+    import("zod"),
+    import("@/lib/session-store"),
+  ]);
+
   if (!env.OPENAI_API_KEY) {
     return NextResponse.json({ error: "Server not configured: OPENAI_API_KEY missing" }, { status: 500 });
   }

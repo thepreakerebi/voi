@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-import { env } from "@/lib/env";
-import { z } from "zod";
-import { appendMessage, getMessages } from "@/lib/session-store";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function POST(req: NextRequest) {
-  // Basic rate limit by IP
-  // Rate limiting removed for development simplicity
+  // Lazy-load heavy deps to avoid static-eval issues in Vercel Edge build
+  const [{ streamText }, { createOpenAI }, { env }, { z }, { appendMessage, getMessages }] = await Promise.all([
+    import("ai"),
+    import("@ai-sdk/openai"),
+    import("@/lib/env"),
+    import("zod"),
+    import("@/lib/session-store"),
+  ]);
 
   const BodySchema = z.object({
     sessionId: z.string().min(1).default("default"),

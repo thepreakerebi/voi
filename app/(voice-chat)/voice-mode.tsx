@@ -10,6 +10,7 @@ export default function VoiceMode({ onClose, onMicControlReady }: { onClose?: ()
   
   React.useEffect(() => {
     onMicControlReady?.({ toggleMic });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onMicControlReady]);
 
   // If parent requested auto-mic immediately after mount, it will call ref after this effect
