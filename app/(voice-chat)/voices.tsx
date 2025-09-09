@@ -11,7 +11,7 @@ type Props = {
 
 export default function Voices({ onCaptionUpdate, onClose }: Props) {
   return (
-    <section className="md:static fixed inset-x-0 bottom-0 z-20 flex flex-col p-4 items-center justify-center gap-6 h-auto md:h-full w-full md:w-full bg-card md:bg-transparent">
+    <section className="md:static fixed inset-x-0 bottom-0 z-20 flex flex-col px-2 py-4 md:p-4 items-center justify-center gap-6 h-auto md:h-full w-full md:w-full bg-card md:bg-transparent">
       <section className="flex items-center gap-3">
         <Image src="/orb.png" alt="AI" width={96} height={96} className="rounded-full" />
         <ArrowLeftRight className="size-4 text-muted-foreground" />

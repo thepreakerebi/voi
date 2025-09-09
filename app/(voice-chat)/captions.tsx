@@ -13,7 +13,7 @@ export default function Captions({ userText, aiText }: Props) {
       <section
         aria-live="polite"
         aria-atomic="false"
-        className="text-center space-y-6 w-full h-full max-w-2xl"
+        className="text-center space-y-6 w-full h-[29vh] md:h-full max-w-2xl"
       >
         {!userText && !aiText ? (
           <section className="h-full w-full flex items-center justify-center">
