@@ -6,6 +6,8 @@ import { z } from "zod";
 import { appendMessage, getMessages } from "@/lib/session-store";
 
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Accepts either:
 // 1) audio/* body → STT → chat → TTS (binary response)
