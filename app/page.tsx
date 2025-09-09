@@ -15,7 +15,7 @@ export default function Home() {
           <TextMode onOpenVoice={() => setMode("voice")} />
         </section>
       ) : (
-        <section className="w-full px-3 md:px-4 py-16 bg-secondary">
+        <section className="w-full h-[calc(100vh-56px)] px-3 md:px-4 bg-secondary overflow-hidden">
           <VoiceMode onClose={() => setMode("text")} />
         </section>
       )}
