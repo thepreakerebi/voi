@@ -19,7 +19,7 @@ export default function TextModeCard({ src, alt, children, onClick }: Props) {
         variant="ghost"
         className={cn(
           buttonVariants({ variant: "ghost", size: "lg" }),
-          "w-full max-w-xl h-auto min-h-14 bg-secondary20 border-1 justify-start gap-3 rounded-xl px-4 py-5 whitespace-normal text-left"
+          "w-full max-w-xl h-auto min-h-14 bg-neutral-200 dark:bg-neutral-700 justify-start gap-3 rounded-xl px-4 py-5 whitespace-normal text-left"
         )}
         onClick={onClick}
       >
