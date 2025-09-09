@@ -10,13 +10,15 @@ export default function Home() {
   return (
     <section className="h-full">
       <Header />
-      <section className="w-full px-3 md:px-64 py-16 bg-secondary">
-        {mode === "text" ? (
+      {mode === "text" ? (
+        <section className="w-full px-3 md:px-64 py-16 bg-secondary">
           <TextMode onOpenVoice={() => setMode("voice")} />
-        ) : (
+        </section>
+      ) : (
+        <section className="w-full px-3 md:px-4 py-16 bg-secondary">
           <VoiceMode onClose={() => setMode("text")} />
-        )}
-      </section>
+        </section>
+      )}
     </section>
   );
 }

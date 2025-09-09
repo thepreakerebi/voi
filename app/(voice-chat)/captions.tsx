@@ -9,8 +9,12 @@ type Props = {
 
 export default function Captions({ userText, aiText }: Props) {
   return (
-    <section className="h-[50vh] md:h-[70vh] flex items-center justify-center">
-      <section aria-live="polite" aria-atomic="false" className="text-center space-y-6 w-full max-w-2xl">
+    <section className="h-full w-full flex items-center justify-center">
+      <section
+        aria-live="polite"
+        aria-atomic="false"
+        className="text-center space-y-6 w-full h-full max-w-2xl"
+      >
         {!userText && !aiText ? (
           <figure className="mx-auto flex flex-col items-center gap-3">
             <Image src="/caption-unscreen.gif" alt="" width={48} height={48} />
@@ -19,20 +23,20 @@ export default function Captions({ userText, aiText }: Props) {
             </figcaption>
           </figure>
         ) : (
-          <>
+          <section className="h-full w-full overflow-y-auto space-y-6 px-2">
             {userText && (
               <article>
                 <h3 className="text-base md:text-xl font-medium">You</h3>
-                <p className="text-lg md:text-2xl leading-relaxed">{userText}</p>
+                <p className="text-lg md:text-2xl leading-relaxed text-pretty">{userText}</p>
               </article>
             )}
             {aiText && (
               <article>
                 <h3 className="text-base md:text-xl font-medium">Assistant</h3>
-                <p className="text-lg md:text-2xl leading-relaxed">{aiText}</p>
+                <p className="text-lg md:text-2xl leading-relaxed text-pretty">{aiText}</p>
               </article>
             )}
-          </>
+          </section>
         )}
       </section>
     </section>
