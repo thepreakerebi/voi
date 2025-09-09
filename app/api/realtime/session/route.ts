@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { z } from "zod";
-import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "edge";
 
@@ -12,9 +11,7 @@ export async function POST(req: NextRequest) {
     if (!env.OPENAI_API_KEY) {
       return NextResponse.json({ error: "Server not configured: OPENAI_API_KEY missing" }, { status: 500 });
     }
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-    const rl = rateLimit({ key: `rt:${ip}`, limit: 10, windowMs: 60_000 });
-    if (!rl.ok) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+    // Rate limiting removed for development simplicity
 
     const Body = z
       .object({

@@ -3,16 +3,13 @@ import { streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { env } from "@/lib/env";
 import { z } from "zod";
-import { rateLimit } from "@/lib/rate-limit";
 import { appendMessage, getMessages } from "@/lib/session-store";
 
 export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   // Basic rate limit by IP
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  const rl = rateLimit({ key: `chat:${ip}`, limit: 30, windowMs: 60_000 });
-  if (!rl.ok) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  // Rate limiting removed for development simplicity
 
   const BodySchema = z.object({
     sessionId: z.string().min(1).default("default"),

@@ -3,10 +3,10 @@
 import * as React from "react";
 import Captions from "./captions";
 import Voices from "./voices";
+import { useVoiceChat } from "./use-voice-chat";
 
 export default function VoiceMode({ onClose }: { onClose?: () => void }) {
-  const [userCaption, setUserCaption] = React.useState("");
-  const [aiCaption, setAiCaption] = React.useState("");
+  const { isMicOn, userCaption, aiCaption, toggleMic } = useVoiceChat();
 
   return (
     <section className="w-full h-[calc(100vh-56px)] flex flex-col items-center md:px-2 md:py-8">
@@ -15,7 +15,7 @@ export default function VoiceMode({ onClose }: { onClose?: () => void }) {
           <Captions userText={userCaption} aiText={aiCaption} />
         </section>
         <section className="rounded-[20px] w-full bg-transparent md:bg-card h-full p-0 md:p-8">
-          <Voices onCaptionUpdate={(u, a) => { setUserCaption(u ?? userCaption); setAiCaption(a ?? aiCaption); }} onClose={onClose} />
+          <Voices onClose={onClose} onToggleMic={toggleMic} micOn={isMicOn} />
         </section>
       </section>
     </section>

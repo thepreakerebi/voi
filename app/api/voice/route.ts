@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { experimental_transcribe as transcribe, experimental_generateSpeech as generateSpeech, streamText } from "ai";
+import { experimental_generateSpeech as generateSpeech, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { env } from "@/lib/env";
 import { z } from "zod";
-import { rateLimit } from "@/lib/rate-limit";
 import { appendMessage, getMessages } from "@/lib/session-store";
 
 export const runtime = "edge";
@@ -18,9 +17,7 @@ export async function POST(req: NextRequest) {
   const openai = createOpenAI({ apiKey: env.OPENAI_API_KEY });
 
   const contentType = req.headers.get("content-type") || "";
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  const rl = rateLimit({ key: `voice:${ip}`, limit: 20, windowMs: 60_000 });
-  if (!rl.ok) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  // Rate limiting removed for development simplicity
 
   // TTS-only branch when JSON body is provided
   if (contentType.includes("application/json")) {
@@ -52,13 +49,37 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // Voice: audio → STT → chat → TTS
+  // Voice: audio → STT → chat → TTS (JSON response with captions and audio base64)
   const audioArrayBuffer = await req.arrayBuffer();
+  // Ignore tiny chunks that Whisper can't decode reliably
+  if (audioArrayBuffer.byteLength < 10000) {
+    return NextResponse.json({ userText: "", assistantText: "" });
+  }
 
-  const transcript = await transcribe({
-    model: openai.transcription("gpt-4o-mini-transcribe"),
-    audio: new Uint8Array(audioArrayBuffer),
-  });
+  // Use OpenAI REST transcription API directly for robust decoding of webm/opus chunks
+  const form = new FormData();
+  form.append("model", "whisper-1");
+  form.append("language", "en");
+  form.append("response_format", "json");
+  const blob = new Blob([audioArrayBuffer], { type: contentType || "audio/webm" });
+  form.append("file", blob, "chunk.webm");
+
+  let transcriptText = "";
+  try {
+    const oaiRes = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}` },
+      body: form,
+    });
+    if (oaiRes.ok) {
+      const oaiJson = (await oaiRes.json()) as { text?: string };
+      transcriptText = (oaiJson.text ?? "").toString();
+    }
+  } catch {}
+
+  if (!transcriptText.trim()) {
+    return NextResponse.json({ userText: "", assistantText: "" });
+  }
 
   // capture optional session from query
   const { searchParams } = new URL(req.url);
@@ -67,7 +88,11 @@ export async function POST(req: NextRequest) {
 
   const chat = await streamText({
     model: openai("gpt-4o-mini"),
-    messages: [...history, { role: "user", content: transcript.text }],
+    messages: [
+      { role: "system", content: "You are Voi, a helpful voice assistant. Always respond in clear English." },
+      ...history,
+      { role: "user", content: transcriptText }
+    ],
   });
 
   const answer = await chat.text;
@@ -80,14 +105,15 @@ export async function POST(req: NextRequest) {
   });
 
   // persist turn
-  appendMessage(sessionId, { role: "user", content: transcript.text });
+  appendMessage(sessionId, { role: "user", content: transcriptText });
   appendMessage(sessionId, { role: "assistant", content: answer });
 
-  return new NextResponse(speech.audio.uint8Array, {
-    headers: {
-      "Content-Type": speech.audio.mediaType,
-      "Cache-Control": "no-store",
-    },
+  // Return captions and audio as base64 for client playback
+  const base64 = speech.audio.base64;
+  return NextResponse.json({
+    userText: transcriptText,
+    assistantText: answer,
+    audio: { base64, mediaType: speech.audio.mediaType },
   });
 }
 
