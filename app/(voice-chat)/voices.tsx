@@ -1,0 +1,36 @@
+"use client";
+
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { MicOff, X, ArrowLeftRight } from "lucide-react";
+
+type Props = {
+  onCaptionUpdate?: (user?: string, ai?: string) => void;
+};
+
+export default function Voices({ onCaptionUpdate }: Props) {
+  return (
+    <section className="flex flex-col items-center gap-6">
+      <section className="flex items-center gap-3">
+        <Image src="/orb.png" alt="AI" width={96} height={96} className="rounded-full" />
+        <ArrowLeftRight className="size-4 text-muted-foreground" />
+        <Image src="/user.png" alt="You" width={88} height={88} className="rounded-full" />
+      </section>
+
+      <p className="text-sm text-muted-foreground">Your mic is on <span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-emerald-600 text-xs">You can speak now</span></p>
+
+      <section className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 w-full md:w-auto">
+          <MicOff className="size-4" />
+          Turn off mic
+        </Button>
+        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 w-full md:w-auto">
+          <X className="size-4" />
+          Close voice mode
+        </Button>
+      </section>
+    </section>
+  );
+}
+
+
