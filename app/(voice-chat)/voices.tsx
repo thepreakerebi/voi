@@ -13,7 +13,7 @@ type Props = {
 
 export default function Voices({ onClose, onToggleMic, micOn }: Props) {
   return (
-    <section className="md:static fixed inset-x-0 bottom-0 z-20 flex flex-col px-2 py-4 md:p-4 items-center justify-center gap-6 h-auto md:h-full w-full md:w-full bg-card md:bg-transparent rounded-t-[20px] md:rounded-[20px]">
+    <section className="md:static border-secondary border-2 md:border-none fixed inset-x-0 bottom-0 z-20 flex flex-col px-2 py-4 md:p-4 items-center justify-center gap-6 h-auto md:h-full w-full md:w-full bg-card md:bg-transparent rounded-t-[20px] md:rounded-[20px]">
       <section className="flex items-center gap-3">
         <AiOrb speaking={false} size={96} />
         <ArrowLeftRight className="size-4 text-muted-foreground" />

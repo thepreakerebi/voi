@@ -13,7 +13,7 @@ export default function Captions({ messages = [] }: Props) {
       <section
         aria-live="polite"
         aria-atomic="false"
-        className="mx-auto flex h-[42vh] md:h-full min-h-0 w-full max-w-2xl flex-col overflow-hidden text-center"
+        className="mx-auto flex h-[calc(100vh-200px)] md:h-full min-h-0 w-full max-w-2xl flex-col overflow-hidden text-center"
       >
         {messages.length === 0 ? (
           <section className="flex h-full w-full items-center justify-center">
@@ -25,7 +25,7 @@ export default function Captions({ messages = [] }: Props) {
             </figure>
           </section>
         ) : (
-          <section className="min-h-0 overflow-y-auto space-y-4 text-left p-2">
+          <section className="overflow-y-auto space-y-4 text-left p-2">
             {messages.map((m, i) => (
               <Message key={i} role={m.role} content={m.content} />
             ))}
