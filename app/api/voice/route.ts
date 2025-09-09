@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     // store assistant text in session
     appendMessage(sessionId, { role: "assistant", content: text });
 
-    return new NextResponse(speech.audio.uint8Array, {
+    return new NextResponse(speech.audio.uint8Array.buffer as ArrayBuffer, {
       headers: {
         "Content-Type": speech.audio.mediaType,
         "Cache-Control": "no-store",
