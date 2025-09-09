@@ -16,12 +16,14 @@ export default function Captions({ userText, aiText }: Props) {
         className="text-center space-y-6 w-full h-full max-w-2xl"
       >
         {!userText && !aiText ? (
-          <figure className="mx-auto flex flex-col items-center gap-3">
-            <Image src="/caption-unscreen.gif" alt="" width={48} height={48} />
-            <figcaption className="text-muted-foreground text-base md:text-lg">
-              Conversation captions will show here
-            </figcaption>
-          </figure>
+          <section className="h-full w-full flex items-center justify-center">
+            <figure className="flex flex-col items-center gap-3">
+              <Image src="/caption-unscreen.gif" alt="" width={48} height={48} />
+              <figcaption className="text-muted-foreground text-base md:text-lg">
+                Conversation captions will show here
+              </figcaption>
+            </figure>
+          </section>
         ) : (
           <section className="h-full w-full overflow-y-auto space-y-6 px-2">
             {userText && (
