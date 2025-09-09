@@ -6,9 +6,10 @@ import { MicOff, X, ArrowLeftRight } from "lucide-react";
 
 type Props = {
   onCaptionUpdate?: (user?: string, ai?: string) => void;
+  onClose?: () => void;
 };
 
-export default function Voices({ onCaptionUpdate }: Props) {
+export default function Voices({ onCaptionUpdate, onClose }: Props) {
   return (
     <section className="flex flex-col items-center gap-6">
       <section className="flex items-center gap-3">
@@ -24,7 +25,7 @@ export default function Voices({ onCaptionUpdate }: Props) {
           <MicOff className="size-4" />
           Turn off mic
         </Button>
-        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 w-full md:w-auto">
+        <Button type="button" variant="outline" className="rounded-full gap-2 px-6 w-full md:w-auto" onClick={onClose}>
           <X className="size-4" />
           Close voice mode
         </Button>

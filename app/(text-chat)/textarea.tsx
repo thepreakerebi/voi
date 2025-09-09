@@ -15,10 +15,11 @@ type Props = {
   onAssistantDelta?: (delta: string) => void;
   onAssistantDone?: (full: string) => void;
   getSessionMessages?: () => Array<{ role: "system" | "user" | "assistant"; content: string }>;
+  onOpenVoice?: () => void;
 };
 
 const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
-  ({ label = "Ask anything", onSend, onAssistantDelta, onAssistantDone, getSessionMessages }, ref) => {
+  ({ label = "Ask anything", onSend, onAssistantDelta, onAssistantDone, getSessionMessages, onOpenVoice }, ref) => {
     const [value, setValue] = React.useState("");
 
     React.useImperativeHandle(ref, () => ({
@@ -105,7 +106,8 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
                 <Mic className="size-5" />
                 <span>Dictate</span>
               </Button>
-              <Button type="button" variant="secondary" className="rounded-full gap-2 px-6" aria-label="Use voice mode">
+              <Button type="button" variant="secondary" className="rounded-full gap-2 px-6" aria-label="Use voice mode" onClick={onOpenVoice}
+              >
                 <AudioLines className="size-5" />
                 <span>Use voice mode</span>
               </Button>
@@ -119,7 +121,8 @@ const ChatTextarea = React.forwardRef<ChatTextareaHandle, Props>(
                 <Mic className="size-5" />
                 <span>Dictate</span>
               </Button>
-              <Button type="button" variant="secondary" className="rounded-full gap-2 px-5" aria-label="Voice mode">
+              <Button type="button" variant="secondary" className="rounded-full gap-2 px-5" aria-label="Voice mode" onClick={onOpenVoice}
+              >
                 <AudioLines className="size-5" />
                 <span>Voice</span>
               </Button>

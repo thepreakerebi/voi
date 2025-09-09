@@ -4,7 +4,7 @@ import * as React from "react";
 import Captions from "./captions";
 import Voices from "./voices";
 
-export default function VoiceMode() {
+export default function VoiceMode({ onClose }: { onClose?: () => void }) {
   const [userCaption, setUserCaption] = React.useState("");
   const [aiCaption, setAiCaption] = React.useState("");
 
@@ -15,7 +15,7 @@ export default function VoiceMode() {
           <Captions userText={userCaption} aiText={aiCaption} />
         </section>
         <section className="rounded-2xl border bg-card p-4 md:p-6">
-          <Voices onCaptionUpdate={(u, a) => { setUserCaption(u ?? userCaption); setAiCaption(a ?? aiCaption); }} />
+          <Voices onCaptionUpdate={(u, a) => { setUserCaption(u ?? userCaption); setAiCaption(a ?? aiCaption); }} onClose={onClose} />
         </section>
       </section>
     </section>

@@ -9,7 +9,7 @@ import { Layers } from "lucide-react";
 import Message from "./message";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function TextMode() {
+export default function TextMode({ onOpenVoice }: { onOpenVoice?: () => void }) {
   const composerRef = React.useRef<ChatTextareaHandle>(null);
   function handlePromptInsert(text: string) {
     composerRef.current?.insertText(text);
@@ -89,6 +89,7 @@ export default function TextMode() {
           setIsAssistantLoading(true);
           scrollToBottom(false);
         }}
+        onOpenVoice={onOpenVoice}
         onAssistantDelta={(delta) =>
           setMessages((prev) => {
             const last = prev[prev.length - 1];
