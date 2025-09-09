@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MicOff, X, ArrowLeftRight } from "lucide-react";
+import AiOrb from "./ai-orb";
 
 type Props = {
   onCaptionUpdate?: (user?: string, ai?: string) => void;
@@ -13,7 +14,7 @@ export default function Voices({ onCaptionUpdate, onClose }: Props) {
   return (
     <section className="md:static fixed inset-x-0 bottom-0 z-20 flex flex-col px-2 py-4 md:p-4 items-center justify-center gap-6 h-auto md:h-full w-full md:w-full bg-card md:bg-transparent rounded-t-[20px] md:rounded-[20px]">
       <section className="flex items-center gap-3">
-        <Image src="/orb.png" alt="AI" width={96} height={96} className="rounded-full" />
+        <AiOrb speaking={false} size={96} />
         <ArrowLeftRight className="size-4 text-muted-foreground" />
         <Image src="/user.png" alt="You" width={88} height={88} className="rounded-full" />
       </section>
